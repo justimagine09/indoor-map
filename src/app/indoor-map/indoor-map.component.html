@@ -1,1 +1,2 @@
-<canvas #canvas></canvas>
+<canvas #canvas (mousemove)="onMouseMove($event)" (click)="onClick($event)"></canvas>
+<button (click)="creating = false">close</button>
