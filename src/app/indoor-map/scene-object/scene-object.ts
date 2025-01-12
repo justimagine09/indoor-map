@@ -1,3 +1,4 @@
+import type { World } from "./world";
 
 export abstract class SceneObject {
     positionX = 0;
@@ -7,5 +8,7 @@ export abstract class SceneObject {
     rotation = 0;
     zoom = 1;
     
-    abstract draw(): void;
+    constructor() {}
+
+    abstract draw(world: World): void;
 }

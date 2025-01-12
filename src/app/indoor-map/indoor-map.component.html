@@ -1,2 +1,6 @@
+<h1>Indoor Map Creator</h1>
+<div>    
+    <button (click)="toggle()">{{creating ? 'cancel' : 'Create'}}</button>
+    <button *ngIf="objectPath" (click)="save()">save</button>
+</div>
 <canvas #canvas (mousemove)="onMouseMove($event)" (click)="onClick($event)"></canvas>
-<button (click)="creating = false">close</button>
