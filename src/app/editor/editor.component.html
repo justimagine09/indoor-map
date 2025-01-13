@@ -1,0 +1,13 @@
+<section class="canvas-wrapper">
+    <canvas #world (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)"  (mousemove)="onMouseMove($event)" (click)="onClick($event)"></canvas>
+</section>
+<section class="info-wrapper">
+    <button mat-button (click)="snapOnGrid = !snapOnGrid">{{!snapOnGrid ? 'Snap On Grid' : 'Don`t Snap On Grid'}}</button>
+    <button mat-button (click)="toggleCreateObject()">{{!creatingObject ? 'Create Object' : 'Cancel Creating Object'}}</button>
+    <button *ngIf="newObject" mat-button (click)="saveObject()">Save</button>
+    <div>
+        <button mat-button (click)="panning = !panning">{{panning ? 'cancel' : 'panning'}}</button>
+        <button mat-button (click)="zoom(true)">Zoom In</button>
+        <button mat-button (click)="zoom(false)">Zoom out</button>
+    </div>
+</section>

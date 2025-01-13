@@ -1,3 +1,5 @@
+import { SceneObject } from "./scene-object";
+
 export class World {
     positionX = 0;
     positionY = 0;
@@ -5,9 +7,10 @@ export class World {
     height = 0;
     rotation = 0;
     zoom = 1;
-    sceneObjects = [];
+    sceneObjects: SceneObject[] = [];
     gridCount = 20;
     grids: any = [];
+    gridGap = 15;
     gridColor = '#000';
     backgroundColor = '#eee';
     context: CanvasRenderingContext2D;
@@ -22,12 +25,28 @@ export class World {
         this.gridCount = this.gridCount ?? 20;
         element.width = config.width;
         element.height = config.height;
-        this.createGridItems();
     }
     
     draw () {
         this.drawWorld();
-        this.drawGrid();
+        this.sceneObjects.forEach((item) => {
+            item.draw(this);
+        });
+
+        let xDistance = this.getGridGapFromWorld();
+        let yDistance = this.getGridGapFromWorld();
+
+        while (xDistance < this.width) {
+            this.context.fillStyle = '#000';
+            this.context.fillRect(xDistance, 0, 0.3, this.height);
+            xDistance+= this.getGridGapFromWorld();
+        }
+
+        while (yDistance < this.width) {
+            this.context.fillStyle = '#000';
+            this.context.fillRect(0, yDistance, this.width ,0.3);
+            yDistance+= this.getGridGapFromWorld();
+        }
     }
 
     getMousePosition(mouseEvent: MouseEvent) {
@@ -35,6 +54,19 @@ export class World {
         x: mouseEvent.pageX - this.canvas.offsetLeft,
         y: mouseEvent.pageY - this.canvas.offsetTop
        }
+    }
+
+    getNearestGridPoint(x: number, y: number): {x:number, y: number} {
+        const gap = this.getGridGapFromWorld();
+        const xGap = gap - (x % gap);
+        const xR = x % gap;
+        const yGap = gap - (y % gap);
+        const yR = y % gap;
+
+        x = xGap < xR ? x + xGap : x - xR;
+        y = yGap < yR ? y + yGap : y - yR;
+
+        return { x, y };
     }
 
     hover(mouseEvent: MouseEvent) {
@@ -56,39 +88,26 @@ export class World {
     }
 
     drawWorld() {
-        this.context.fillStyle = this.backgroundColor;
-        this.context.fillRect(this.positionX, this.positionY, this.width, this.height);
+        this.context.clearRect(0, 0, this.width, this.height);
     }
 
-    drawGrid() {
-        this.context.fillStyle = this.gridColor;
-        this.grids.forEach((grid: any) => {
-            if(grid.hovered) {
-                this.context.fillRect(grid.positionX - 2, grid.positionY - 2, grid.width + 4, grid.height + 4);
-                return;
-            }
-            this.context.fillRect(grid.positionX, grid.positionY, grid.width, grid.height);
-        });
+    getPositionXFromWorld(x: number) {
+        return (this.positionX + x) * this.zoom;
     }
 
-    private createGridItems() {
-        this.grids = [];
-        const gapX = this.width / this.gridCount;
-        const gapY = this.height / this.gridCount;
+    getPositionYFromWorld(y: number) {
+        return (this.positionY + y) * this.zoom;
+    }
 
-        for (let i=1; i < this.gridCount; i++) {
-            const gridX = gapX * i;
-            
-            for (let j=1; j < this.gridCount; j++) {
-                const gridY = gapY * j;
+    getWidthFromWorld(width: number) {
+        return width * this.zoom;
+    }
 
-                this.grids.push({
-                    positionX: this.positionX + gridX - 1,
-                    positionY: this.positionY + gridY - 1,
-                    width: 2,
-                    height: 2
-                });
-            }
-        }
+    getHeightFromWorld(height: number) {
+        return height * this.zoom;
+    }
+
+    getGridGapFromWorld() {
+        return this.gridGap * this.zoom;
     }
 }

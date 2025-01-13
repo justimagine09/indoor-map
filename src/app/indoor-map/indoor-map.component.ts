@@ -26,7 +26,6 @@ export class IndoorMapComponent implements AfterViewInit {
       const newLocal = this;
       newLocal.objectPath?.draw(this.world);
       this.drawTempLine();
-      this.world.drawGrid();
     });
   }
 

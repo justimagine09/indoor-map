@@ -15,44 +15,42 @@ export class CustomObject extends SceneObject {
         super();
         this.positionX = object.positionX as any;
         this.positionY = object.positionY as any;
-        this.lines = object.lines;
+        this.lines = object.lines ?? [];
     }
 
     calculateBoundary() {
-        const xs = [this.positionX, ...this.lines.map((line: any) => line.positionX)];
-        const ys = [this.positionY, ...this.lines.map((line: any) => line.positionY)];
-        this.boundary.left = Math.min(...xs);
-        this.boundary.right = Math.max(...xs);
-        this.boundary.top = Math.min(...ys);
-        this.boundary.bottom = Math.max(...ys);
-        this.boundary.positionX = this.boundary.left;
-        this.boundary.positionY = this.boundary.top;
-        this.boundary.width = this.boundary.right - this.boundary.left;
-        this.boundary.height = this.boundary.bottom - this.boundary.top;
+        // const xs = [this.positionX, ...this.lines.map((line: any) => line.positionX)];
+        // const ys = [this.positionY, ...this.lines.map((line: any) => line.positionY)];
+        // this.boundary.left = Math.min(...xs);
+        // this.boundary.right = Math.max(...xs);
+        // this.boundary.top = Math.min(...ys);
+        // this.boundary.bottom = Math.max(...ys);
+        // this.boundary.positionX = this.boundary.left;
+        // this.boundary.positionY = this.boundary.top;
+        // this.boundary.width = this.boundary.right - this.boundary.left;
+        // this.boundary.height = this.boundary.bottom - this.boundary.top;
     }
 
     override draw(world: World): void {
-        if(this.boundary && this.showTransformer) {
-            world.context.fillStyle = 'blue';
-            world.context.strokeStyle = 'skyblue';
-            world.context.strokeRect(this.boundary.positionX - 10, this.boundary.positionY - 10, this.boundary.width + 20, this.boundary.height + 20);
-            world.context.fillRect(this.boundary.left - 13, this.boundary.top - 13, 6, 6);
-            world.context.fillRect(this.boundary.right + 7, this.boundary.top - 13, 6, 6);
-            world.context.fillRect(this.boundary.left - 13, this.boundary.bottom + 7, 6, 6);
-            world.context.fillRect(this.boundary.right + 7, this.boundary.bottom + 7, 6, 6);
-        }
+        // if(this.boundary && this.showTransformer) {
+        //     world.context.fillStyle = 'blue';
+        //     world.context.strokeStyle = 'skyblue';
+        //     world.context.strokeRect(this.boundary.positionX - 10, this.boundary.positionY - 10, this.boundary.width + 20, this.boundary.height + 20);
+        //     world.context.fillRect(this.boundary.left - 13, this.boundary.top - 13, 6, 6);
+        //     world.context.fillRect(this.boundary.right + 7, this.boundary.top - 13, 6, 6);
+        //     world.context.fillRect(this.boundary.left - 13, this.boundary.bottom + 7, 6, 6);
+        //     world.context.fillRect(this.boundary.right + 7, this.boundary.bottom + 7, 6, 6);
+        // }
 
         world.context.beginPath();
         world.context.strokeStyle = this.strokeColor;
-        world.context.moveTo(this.positionX, this.positionY);
+        world.context.moveTo(world.getPositionXFromWorld(this.positionX), world.getPositionYFromWorld(this.positionY));
         this.lines.forEach((line: any) => {
-            world.context.lineTo(line.positionX, line.positionY);
+            world.context.lineTo(world.getPositionXFromWorld(line.positionX), world.getPositionYFromWorld(line.positionY));
         });
         world.context.stroke();
-        if(this.showTransformer) {
-            world.context.fillStyle = "red";
-            world.context.fill();
-        }
+        world.context.fillStyle = "red";
+        world.context.fill();
         world.context.closePath();
     }
 
