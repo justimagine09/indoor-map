@@ -7,6 +7,7 @@ export abstract class SceneObject {
     height = 0;
     rotation = 0;
     zoom = 1;
+    label = "untitled";
     
     constructor() {}
 

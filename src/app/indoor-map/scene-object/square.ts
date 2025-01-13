@@ -8,6 +8,7 @@ export class Square extends SceneObject {
 export class CustomObject extends SceneObject {
     lines: any = [];
     strokeColor = '#000';
+    fillColor = null;
     boundary: any = {};
     showTransformer = false;
     
@@ -47,11 +48,18 @@ export class CustomObject extends SceneObject {
         world.context.moveTo(world.getPositionXFromWorld(this.positionX), world.getPositionYFromWorld(this.positionY));
         this.lines.forEach((line: any) => {
             world.context.lineTo(world.getPositionXFromWorld(line.positionX), world.getPositionYFromWorld(line.positionY));
+            world.context.fillStyle = "#000";
+            world.context.fillRect(world.getPositionXFromWorld(line.positionX) - 2, world.getPositionYFromWorld(line.positionY) - 2, 4, 4);
         });
+        if(this.fillColor) {
+            world.context.fillStyle = this.fillColor;
+            world.context.fill();
+        }
         world.context.stroke();
-        world.context.fillStyle = "red";
-        world.context.fill();
         world.context.closePath();
+        
+        world.context.fillStyle = "#000";
+        world.context.fillRect(world.getPositionXFromWorld(this.positionX) - 2, world.getPositionYFromWorld(this.positionY) - 2, 4, 4);
     }
 
     hover(x: any, y: any, world: World) {

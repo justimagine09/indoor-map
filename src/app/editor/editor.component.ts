@@ -8,7 +8,7 @@ import { CustomObject } from '../indoor-map/scene-object/square';
   styleUrl: './editor.component.scss'
 })
 export class EditorComponent implements AfterViewInit {
-  @ViewChild('world') worldCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('worldz') worldCanvas!: ElementRef<HTMLCanvasElement>;
   world!: World;
   snapOnGrid = false;
   creatingObject = false;
@@ -103,6 +103,7 @@ export class EditorComponent implements AfterViewInit {
     this.creatingObject = !this.creatingObject;
 
     if(!this.creatingObject) {
+      this.world.sceneObjects = this.world.sceneObjects.filter((item) => item !== this.newObject);
       this.newObject = undefined;
     }
   }
