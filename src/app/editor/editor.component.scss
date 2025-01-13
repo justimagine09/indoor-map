@@ -2,11 +2,12 @@
     display: flex;
     height: 100vh;
     background-color: red;
+    overflow: hidden;
 
     & > section {
         &.canvas-wrapper {
             width: 100%;
-            background-color: #e8eeee;
+            background-color: #f5f5f5;
 
             canvas {
                 width: 100%;
@@ -16,10 +17,20 @@
 
         &.info-wrapper {
             min-width: 340px;
-            min-height: 340px;
+            max-width: 340px;
             background-color: #fff;
             box-shadow: -2 0 5px #ddd;
             padding: 24px;
         }
+    }
+
+    .scene-objects-list {
+        max-height: 300px;
+    }
+
+    .object-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
     }
 }

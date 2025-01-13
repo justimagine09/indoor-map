@@ -1,3 +1,4 @@
+import { BehaviorSubject } from "rxjs";
 import { SceneObject } from "./scene-object";
 
 export class World {
@@ -7,7 +8,8 @@ export class World {
     height = 0;
     rotation = 0;
     zoom = 1;
-    sceneObjects: SceneObject[] = [];
+    sceneObjects = new BehaviorSubject<SceneObject[]>([]);
+    sceneObjectsLength = 0;
     gridCount = 20;
     grids: any = [];
     gridGap = 15;
@@ -20,39 +22,47 @@ export class World {
     constructor(element:HTMLCanvasElement, config: any) {
         this.context = element.getContext('2d')!;
         this.canvas = element;
-        this.width = config.width;
-        this.height = config.height;
         this.gridCount = this.gridCount ?? 20;
         element.width = config.width;
         element.height = config.height;
+        // this.positionX = this.gridGap * -1;
+        // this.positionY =  this.gridGap * -1;
+        this.width = config.width;
+        this.height = config.height;
+        this.sceneObjects.subscribe((objects) => {
+            this.sceneObjectsLength = objects.length;
+        });
     }
     
     draw () {
         this.drawWorld();
-        this.sceneObjects.forEach((item) => {
+        this.sceneObjects.getValue().forEach((item) => {
             item.draw(this);
         });
+        this.drawGrid();
+    }
 
+    drawGrid() {
         let xDistance = this.getGridGapFromWorld();
         let yDistance = this.getGridGapFromWorld();
 
         while (xDistance < this.width) {
-            this.context.fillStyle = '#000';
-            this.context.fillRect(xDistance, 0, 0.3, this.height);
+            this.context.fillStyle = 'rgba(0,0,0,0.1)';
+            this.context.fillRect(xDistance, 0, 1, this.height);
             xDistance+= this.getGridGapFromWorld();
         }
 
-        while (yDistance < this.width) {
-            this.context.fillStyle = '#000';
-            this.context.fillRect(0, yDistance, this.width ,0.3);
+        while (yDistance < this.height) {
+            this.context.fillStyle = 'rgba(0,0,0,0.1)';
+            this.context.fillRect(0, yDistance, this.width, 1);
             yDistance+= this.getGridGapFromWorld();
         }
     }
 
     getMousePosition(mouseEvent: MouseEvent) {
        return {
-        x: mouseEvent.pageX - this.canvas.offsetLeft,
-        y: mouseEvent.pageY - this.canvas.offsetTop
+        x: Math.round(mouseEvent.pageX - this.canvas.offsetLeft),
+        y: Math.round(mouseEvent.pageY - this.canvas.offsetTop)
        }
     }
 
@@ -66,7 +76,19 @@ export class World {
         x = xGap < xR ? x + xGap : x - xR;
         y = yGap < yR ? y + yGap : y - yR;
 
+        x = x * (this.gridGap / this.getGridGapFromWorld());
+        y = y * (this.gridGap / this.getGridGapFromWorld());
+        
         return { x, y };
+    }
+
+    zoomIn() {
+        this.zoom++;
+    }
+
+    zoomOut() {
+        if(this.zoom <= 0) return;
+        this.zoom--;
     }
 
     hover(mouseEvent: MouseEvent) {
@@ -91,12 +113,12 @@ export class World {
         this.context.clearRect(0, 0, this.width, this.height);
     }
 
-    getPositionXFromWorld(x: number) {
-        return (this.positionX + x) * this.zoom;
+    getPositionXFromWorld(x: number, zoom?: number) {
+        return (this.positionX + x) * (zoom ?? this.zoom);
     }
 
-    getPositionYFromWorld(y: number) {
-        return (this.positionY + y) * this.zoom;
+    getPositionYFromWorld(y: number, zoom?: number) {
+        return (this.positionY + y) * (zoom ?? this.zoom);
     }
 
     getWidthFromWorld(width: number) {
@@ -109,5 +131,26 @@ export class World {
 
     getGridGapFromWorld() {
         return this.gridGap * this.zoom;
+    }
+
+    getAbsolutePositionX(x: number) {
+        return x / this.zoom - this.positionX;
+    }
+
+    getAbsolutePositionY(y: number) {
+        return y / this.zoom - this.positionY;
+    }
+
+    addSceneObject(object: SceneObject) {
+        const objects = this.sceneObjects.getValue();
+        objects.push(object);
+        this.sceneObjects.next(objects);
+    }
+
+    removeSceneObject(object: SceneObject){
+        const objects = this.sceneObjects.getValue();
+        objects.splice(objects.indexOf(object), 1);
+        this.sceneObjects.next(objects);
+
     }
 }

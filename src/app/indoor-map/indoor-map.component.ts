@@ -57,7 +57,7 @@ export class IndoorMapComponent implements AfterViewInit {
     } else {
       
       this.sceneObjects.forEach((item) => {
-        item.hover(point.x, point.y, this.world);
+        item.hover(point.x, point.y);
       });
     }
   }
